@@ -1,0 +1,9 @@
+---
+# tasks file for Common
+- name: Install packages
+  apt: name={{ item }} state=present
+  with_items:
+  - docker.io
+  - python-pip
+- pip:
+    name: docker-py

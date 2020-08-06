@@ -1,0 +1,21 @@
+---
+# tasks file for Prodaction
+- name: Ensure directory is present
+  file:
+    path: /home/production/
+    state: directory
+- name: Copy build files
+  synchronize:
+    src: .
+    dest: /home/production/
+- name: Build tomcat container
+  docker_image:
+    name: product-container:latest
+    path: /home/production
+- name: Start tomcat container
+  docker_container:
+    name: product-container
+    image: product-container:latest
+    #state: present
+    ports:
+      - 80:8080

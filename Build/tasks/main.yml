@@ -1,0 +1,39 @@
+---
+# tasks file for Build
+- name: Ensure directory is present
+  file:
+    path: /home/build/
+    state: directory
+- name: Copy build files
+  synchronize:
+    src: Dockerfile
+    dest: /home/build/Dockerfile
+- name: Edit Dockerfile
+  blockinfile:
+    path: /home/build/Dockerfile
+    state: present
+    insertafter: 'WORKDIR /home/build'
+    block: |
+      RUN git clone {{repo}}
+      WORKDIR /home/build/{{build_dir}}
+- name: Build maven container
+  docker_image:
+    name: build-container:latest
+    path: /home/build
+- name: Start maven container
+  docker_container:
+    name: build-container
+    image: build-container:latest
+    #state: present
+    volumes:
+      - /opt:/tmp
+- name: Remove maven container
+  docker_container:
+    name: build-container
+    image: build-container:latest
+    state: absent
+- name: Copy artefact
+  synchronize:
+    mode: pull
+    src: /opt/ROOT.war
+    dest: Production/files/ROOT.war

@@ -1,0 +1,16 @@
+---
+- name: Build server configuration
+  hosts: Build
+  become: yes
+
+  roles:
+    - Common
+    - Build
+
+- name: Product server configuration
+  hosts: Production
+  become: yes
+
+  roles:
+    - Common
+    - Production
